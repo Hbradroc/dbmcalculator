@@ -252,7 +252,8 @@ export default function CoilCalculator() {
     };
 
     // Monophase specific parameters
-    if (calculationType === '1' || calculationType === 1) {
+    if (Number(calculationType) === 1) {
+
       return {
         ...commonParams,
         FluidType: {
@@ -300,8 +301,7 @@ export default function CoilCalculator() {
     }
 
     // Direct Expansion and Condenser specific parameters
-    if (calculationType === '2' || calculationType === 2 || 
-        calculationType === '3' || calculationType === 3) {
+    if (calculationType === '2' || calculationType === '3') {
       return {
         ...commonParams,
         RefrigerantType: {
