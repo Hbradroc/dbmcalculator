@@ -358,7 +358,7 @@ export default function CoilCalculator() {
         <Card className="shadow-xl border-0 bg-white/80">
           <CardHeader className="space-y-1 border-b border-gray-100 bg-white/50">
             <CardTitle className="text-2xl font-semibold text-gray-800">
-              Coil Calculator
+              Dbm Coil Calculator
             </CardTitle>
             <p className="text-sm text-gray-500">
               Enter the parameters below to calculate coil specifications
@@ -401,6 +401,9 @@ export default function CoilCalculator() {
         </Card>
       </div>
     </div>
+    <footer className="bg-gray-200 text-center py-4">
+      <p className="text-sm text-gray-600">Developed by Hbradroc@uwo.ca</p>
+    </footer>
   );
 }
 
