@@ -181,7 +181,7 @@ export default function CoilCalculator() {
 
   // Update getVisibleParams to use the FieldConfig type
   const getVisibleParams = (): Record<string, FieldConfig> => {
-    const calculationType = params.CalculationType;
+    const calculationType = String(params.CalculationType);
     
     // Common parameters for all types
     const commonParams: Record<string, FieldConfig> = {
@@ -252,7 +252,7 @@ export default function CoilCalculator() {
     };
 
     // Monophase specific parameters
-    if (calculationType === '1') {
+    if (calculationType === '1' || calculationType === 1) {
       return {
         ...commonParams,
         FluidType: {
@@ -300,7 +300,8 @@ export default function CoilCalculator() {
     }
 
     // Direct Expansion and Condenser specific parameters
-    if (calculationType === '2' || calculationType === '3') {
+    if (calculationType === '2' || calculationType === 2 || 
+        calculationType === '3' || calculationType === 3) {
       return {
         ...commonParams,
         RefrigerantType: {
