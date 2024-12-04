@@ -31,9 +31,19 @@ export async function POST(request: Request) {
     const data = await response.json()
     console.log('API response data:', data);
     return NextResponse.json(data)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Detailed error:', error);
-    return NextResponse.json({ error: 'Failed to process request', details: error.message }, { status: 500 });
+    
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Unknown error occurred';
+
+    return NextResponse.json({ 
+      error: 'Failed to process request', 
+      details: errorMessage 
+    }, { 
+      status: 500 
+    });
   }
 }
 
