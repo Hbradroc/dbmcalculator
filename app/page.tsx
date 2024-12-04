@@ -181,6 +181,9 @@ export default function CoilCalculator() {
 
   // Update getVisibleParams to use the FieldConfig type
   const getVisibleParams = (): Record<string, FieldConfig> => {
+    const calculationType = params.CalculationType;
+    
+    // Common parameters for all types
     const commonParams: Record<string, FieldConfig> = {
       CalculationType: { 
         key: 'CalculationType', 
@@ -216,9 +219,27 @@ export default function CoilCalculator() {
         required: true,
         type: 'number' as const
       },
+      AirInFlowStandard: { 
+        key: 'AirInFlowStandard', 
+        label: 'Air Flow', 
+        required: true,
+        type: 'number' as const
+      },
       NoRows: { 
         key: 'NoRows', 
         label: 'Number of Rows', 
+        required: true,
+        type: 'number' as const
+      },
+      NoTubes: {
+        key: 'NoTubes',
+        label: 'Number of Tubes',
+        required: true,
+        type: 'number' as const
+      },
+      FinPitch: {
+        key: 'FinPitch',
+        label: 'Fin Pitch',
         required: true,
         type: 'number' as const
       },
@@ -229,6 +250,103 @@ export default function CoilCalculator() {
         type: 'dimension' as const
       }
     };
+
+    // Monophase specific parameters
+    if (calculationType === '1') {
+      return {
+        ...commonParams,
+        FluidType: {
+          key: 'FluidType',
+          label: 'Fluid Type',
+          required: true,
+          type: 'select' as const,
+          options: {
+            '1': 'Water',
+            '2': 'Ethylenic Glycol',
+            '3': 'Propylenic Glycol'
+          }
+        },
+        GlycolPercentageByVolume: {
+          key: 'GlycolPercentageByVolume',
+          label: 'Glycol Percentage',
+          required: true,
+          type: 'number' as const
+        },
+        FluidTempIn: {
+          key: 'FluidTempIn',
+          label: 'Fluid Temperature In',
+          required: true,
+          type: 'number' as const
+        },
+        FluidTempOut: {
+          key: 'FluidTempOut',
+          label: 'Fluid Temperature Out',
+          required: true,
+          type: 'number' as const
+        },
+        FluidFlow_dm3s: {
+          key: 'FluidFlow_dm3s',
+          label: 'Fluid Flow (dm³/s)',
+          required: true,
+          type: 'number' as const
+        },
+        NoCircuits: {
+          key: 'NoCircuits',
+          label: 'Number of Circuits',
+          required: true,
+          type: 'number' as const
+        }
+      };
+    }
+
+    // Direct Expansion and Condenser specific parameters
+    if (calculationType === '2' || calculationType === '3') {
+      return {
+        ...commonParams,
+        RefrigerantType: {
+          key: 'RefrigerantType',
+          label: 'Refrigerant Type',
+          required: true,
+          type: 'select' as const,
+          options: {
+            'R410': 'R410',
+            'R32': 'R32',
+            'R22': 'R22',
+            'R134A': 'R134A'
+          }
+        },
+        EvaporatingTemperature: {
+          key: 'EvaporatingTemperature',
+          label: 'Evaporating Temperature',
+          required: true,
+          type: 'number' as const
+        },
+        CondensingTemperature: {
+          key: 'CondensingTemperature',
+          label: 'Condensing Temperature',
+          required: true,
+          type: 'number' as const
+        },
+        NoCircuits: {
+          key: 'NoCircuits',
+          label: 'Number of Circuits',
+          required: true,
+          type: 'number' as const
+        },
+        DTSuperheating: {
+          key: 'DTSuperheating',
+          label: 'DT Superheating',
+          required: true,
+          type: 'number' as const
+        },
+        GasCircuitsConfiguration: {
+          key: 'GasCircuitsConfiguration',
+          label: 'Gas Circuits Configuration',
+          required: true,
+          type: 'number' as const
+        }
+      };
+    }
 
     return commonParams;
   };
