@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CoilParams } from '../types/coilParams';
+import { Mail, Linkedin } from 'lucide-react';
 
 // Define the allowed field types
 type FieldType = 'number' | 'select' | 'dimension';
@@ -18,6 +19,19 @@ interface FieldConfig {
   type: FieldType;
   options?: Record<string, string>;
 }
+
+// Update the mapping to show only inch values in UI
+const manifoldDiameters = {
+  '2': '¾"',
+  '3': '1"',
+  '4': '1¼"',
+  '5': '1½"',
+  '6': '2"',
+  '7': '2½"',
+  '8': '3"',
+  '9': '4"',
+  '10': '5"'
+};
 
 export default function CoilCalculator() {
   const [dimensionType, setDimensionType] = useState('OverallDimensions');
@@ -181,7 +195,7 @@ export default function CoilCalculator() {
 
   // Update getVisibleParams to use the FieldConfig type
   const getVisibleParams = (): Record<string, FieldConfig> => {
-    const calculationType = String(params.CalculationType);
+    const calculationType = params.CalculationType;
     
     // Common parameters for all types
     const commonParams: Record<string, FieldConfig> = {
@@ -248,12 +262,25 @@ export default function CoilCalculator() {
         label: 'Dimensions', 
         required: true,
         type: 'dimension' as const
+      },
+      InletManifoldDiameter: {
+        key: 'InletManifoldDiameter',
+        label: 'Inlet Manifold Diameter',
+        required: true,
+        type: 'select' as const,
+        options: manifoldDiameters
+      },
+      OutletManifoldDiameter: {
+        key: 'OutletManifoldDiameter',
+        label: 'Outlet Manifold Diameter',
+        required: true,
+        type: 'select' as const,
+        options: manifoldDiameters
       }
     };
 
     // Monophase specific parameters
     if (Number(calculationType) === 1) {
-
       return {
         ...commonParams,
         FluidType: {
@@ -301,7 +328,7 @@ export default function CoilCalculator() {
     }
 
     // Direct Expansion and Condenser specific parameters
-    if (calculationType === '2' || calculationType === '3') {
+    if (Number(calculationType) === 2 || Number(calculationType) === 3) {
       return {
         ...commonParams,
         RefrigerantType: {
@@ -353,24 +380,40 @@ export default function CoilCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-4">
+      <div className="absolute top-2 right-4 flex items-center gap-2 text-gray-600">
+        <a 
+          href="mailto:hbradroc@uwo.ca" 
+          className="flex items-center hover:text-gray-900 transition-colors"
+          title="Email"
+        >
+          <Mail className="h-4 w-4" />
+        </a>
+        <a 
+          href="https://linkedin.com/in/harrybradrocco" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center hover:text-gray-900 transition-colors"
+          title="LinkedIn"
+        >
+          <Linkedin className="h-4 w-4" />
+        </a>
+      </div>
+
+      <div className="container mx-auto px-6 max-w-[95%]">
         <Card className="shadow-xl border-0 bg-white/80">
-          <CardHeader className="space-y-1 border-b border-gray-100 bg-white/50">
-            <CardTitle className="text-2xl font-semibold text-gray-800">
-              Dbm Coil Calculator
+          <CardHeader className="space-y-1 border-b border-gray-100 bg-white/50 py-4">
+            <CardTitle className="text-xl font-semibold text-gray-800">
+              DBM Calculator
             </CardTitle>
-            <p className="text-sm text-gray-500">
-              Enter the parameters below to calculate coil specifications
-            </p>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-4 space-y-4">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {Object.entries(getVisibleParams()).map(([key, fieldConfig]) => (
                   <div 
                     key={fieldConfig.key} 
-                    className={fieldConfig.type === 'dimension' ? 'md:col-span-2' : ''}
+                    className={fieldConfig.type === 'dimension' ? 'sm:col-span-2 lg:col-span-3' : ''}
                   >
                     <div className="space-y-2">
                       <Label 
@@ -401,9 +444,6 @@ export default function CoilCalculator() {
         </Card>
       </div>
     </div>
-    <footer className="bg-gray-200 text-center py-4">
-      <p className="text-sm text-gray-600">Developed by Hbradroc@uwo.ca</p>
-    </footer>
   );
 }
 
