@@ -61,16 +61,37 @@ export default function CoilCalculator() {
     CalculationType: 1
   });
 
+  const [calculationBasedOn, setCalculationBasedOn] = useState('Rows');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Create a copy of params to modify
+      const submitParams = { ...params };
+
+      // Update values based on calculation selection
+      if (calculationBasedOn === 'Rows') {
+        submitParams.NoRows = Number(submitParams.CalculationValue) || 0;
+        submitParams.Airoutlettemperature = 0;
+      } else {
+        submitParams.Airoutlettemperature = Number(submitParams.CalculationValue) || 0;
+        submitParams.NoRows = 0;
+      }
+
+      // Ensure NoCircuits is a number or default to 0
+      submitParams.NoCircuits = Number(submitParams.NoCircuits) || 0;
+
+      // Remove the calculation fields from the payload
+      delete submitParams.CalculationBasedOn;
+      delete submitParams.CalculationValue;
+
       const response = await fetch('/api/startJob', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputsData: params,
+          inputsData: submitParams,
           optionsData: [0]
         }),
       });
@@ -90,6 +111,9 @@ export default function CoilCalculator() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === 'CalculationBasedOn') {
+      setCalculationBasedOn(value);
+    }
     setParams(prev => ({
       ...prev,
       [name]: e.target.type === 'number' ? Number(value) : value
@@ -239,11 +263,35 @@ export default function CoilCalculator() {
         required: true,
         type: 'number' as const
       },
-      NoRows: { 
-        key: 'NoRows', 
-        label: 'Number of Rows', 
+      CalculationBasedOn: {
+        key: 'CalculationBasedOn',
+        label: 'Calculation Based On',
+        required: true,
+        type: 'select' as const,
+        options: {
+          'Rows': 'Rows',
+          'OutletTemperature': 'Outlet Temperature'
+        }
+      },
+      CalculationValue: {
+        key: 'CalculationValue',
+        label: calculationBasedOn === 'Rows' ? 'Number of Rows' : 'Outlet Temperature',
         required: true,
         type: 'number' as const
+      },
+      InletManifoldDiameter: {
+        key: 'InletManifoldDiameter',
+        label: 'Inlet Manifold Diameter',
+        required: true,
+        type: 'select' as const,
+        options: manifoldDiameters
+      },
+      OutletManifoldDiameter: {
+        key: 'OutletManifoldDiameter',
+        label: 'Outlet Manifold Diameter',
+        required: true,
+        type: 'select' as const,
+        options: manifoldDiameters
       },
       NoTubes: {
         key: 'NoTubes',
@@ -262,20 +310,6 @@ export default function CoilCalculator() {
         label: 'Dimensions', 
         required: true,
         type: 'dimension' as const
-      },
-      InletManifoldDiameter: {
-        key: 'InletManifoldDiameter',
-        label: 'Inlet Manifold Diameter',
-        required: true,
-        type: 'select' as const,
-        options: manifoldDiameters
-      },
-      OutletManifoldDiameter: {
-        key: 'OutletManifoldDiameter',
-        label: 'Outlet Manifold Diameter',
-        required: true,
-        type: 'select' as const,
-        options: manifoldDiameters
       }
     };
 
